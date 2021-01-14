@@ -35,6 +35,13 @@ func Log() *log.Entry {
 	return log.WithFields(log.Fields{})
 }
 
+/// Apply the top directory over the bottom directory
+/// Both directories MUST exists
+/// If the top directories contains whiteout files, as .wh.$filename or opaque directories. The files are correctly deleted in the bottom directory.
+/// The bottom directory get modified.
+/// Special care is taken to ensure that the owner of the files can always modify the files, at the cost of not having a 100% accurate overlay.
+/// The implemention is highly parallel.
+/// It might be necessary to give the process using this libraries extra capability, most notably CAP_FOWNER and CAP_CHOWN.
 func ApplyDirectory(bottom, top string) error {
 	bottomDir, err := os.Stat(bottom)
 	if err != nil {
